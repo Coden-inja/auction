@@ -49,7 +49,6 @@ interface SessionData {
   viewerMode?: "stage" | "ledger" | "matrix";
   lastSoldLot?: ILastSoldLot | null;
   matrixRevealed: boolean;
-  stagePrice?: number | null;
   teams: AuctionTeam[];
   lots: AuctionLot[];
   history?: {
@@ -259,18 +258,6 @@ export default function ViewerPage() {
                   ₹{activeLot.basePrice} Cr
                 </span>
               </div>
-
-              {/* Live asking price, broadcast by the auctioneer while bidding */}
-              {typeof session?.stagePrice === "number" && session.stagePrice > 0 && (
-                <div className="flex flex-col items-center px-8 py-5 md:px-12 md:py-7 rounded-3xl border-2 border-[#f20089]/50 bg-[#f20089]/10 shadow-2xl">
-                  <span className="font-mono text-xs uppercase tracking-[0.3em] text-[#f20089] font-bold mb-1">
-                    CURRENT BID
-                  </span>
-                  <span className="font-mono text-6xl md:text-8xl font-black text-white tracking-tight tabular-nums">
-                    ₹{session.stagePrice} Cr
-                  </span>
-                </div>
-              )}
 
               {/* Status pill */}
               <div className="flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-1.5 font-mono text-xs font-bold uppercase tracking-[0.2em] text-emerald-300">

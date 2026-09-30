@@ -201,22 +201,6 @@ export default function AdminPage() {
     }
   }, [successMessage, errorMessage]);
 
-  // Broadcast the asking price to the projector, but only once the lot is actually on stage.
-  // Debounced so hammering the +5 button does not hammer Mongo. The server clamps to the team's safe max.
-  const isLotOnStage = session?.activeLotId === selectedLotId;
-  useEffect(() => {
-    if (!selectedLotId || !isLotOnStage) return;
-    if (actionLoading) return;
-    const timer = setTimeout(() => {
-      void fetch("/api/auction/spotlight", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ stagePrice: { price: salePrice, teamId: selectedTeamId } }),
-      });
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [salePrice, selectedTeamId, selectedLotId, isLotOnStage, actionLoading]);
-
   const handleAllot = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedLotId || !selectedTeamId || salePrice <= 0) {
@@ -466,9 +450,6 @@ export default function AdminPage() {
 
   const selectedLot = session?.lots.find((l) => l.lotId === selectedLotId);
   const selectedTeam = session?.teams.find((t) => t.teamId === selectedTeamId);
-
-  // Hard ceiling for the selected team: they must keep the reserve, so this is the most they can pay.
-  const safeMax = selectedTeam ? Math.max(0, selectedTeam.currentBalance - MINIMUM_BALANCE_THRESHOLD) : null;
 
   let budgetWarning: string | null = null;
   let isBudgetViolation = false;
@@ -961,28 +942,11 @@ export default function AdminPage() {
                         type="number"
                         min="1"
                         step="1"
-                        max={safeMax ?? undefined}
                         value={salePrice}
                         onChange={(e) => setSalePrice(Number(e.target.value))}
                         className="w-full bg-black border border-white/10 rounded-xl px-3 py-2 text-sm font-mono font-bold text-white focus:outline-none focus:border-[#f20089]"
                         required
                       />
-
-                      {/* Ceiling for the selected team. Increments stop here so a live bid can never
-                          advertise more than the team can pay. */}
-                      {safeMax !== null && (
-                        <div
-                          className={`px-2.5 py-1.5 rounded-lg border font-mono text-[11px] font-bold ${
-                            salePrice > safeMax
-                              ? "border-rose-500/40 bg-rose-500/10 text-rose-300"
-                              : "border-emerald-500/25 bg-emerald-500/[0.07] text-emerald-300"
-                          }`}
-                        >
-                          {safeMax !== null
-                            ? `MAX FOR ${selectedTeam?.teamName}: ₹${safeMax} Cr (keeps ₹${MINIMUM_BALANCE_THRESHOLD} Cr reserve)`
-                            : `${selectedTeam?.teamName} has no biddable balance left`}
-                        </div>
-                      )}
 
                       <div className="flex flex-wrap gap-1 font-mono text-[11px]">
                         <button
@@ -992,25 +956,27 @@ export default function AdminPage() {
                         >
                           Base (₹{selectedLot.basePrice} Cr)
                         </button>
-                        {[5, 10, 20].map((step) => {
-                          const atMax = safeMax !== null && salePrice + step > safeMax;
-                          return (
-                            <button
-                              key={step}
-                              type="button"
-                              disabled={atMax}
-                              onClick={() => setSalePrice((p) => Math.min(p + step, safeMax ?? p + step))}
-                              title={atMax ? `Would exceed this team's max of ₹${safeMax} Cr` : undefined}
-                              className={`px-2 py-0.5 rounded ${
-                                atMax
-                                  ? "bg-white/[0.02] text-white/20 cursor-not-allowed"
-                                  : "bg-white/[0.05] hover:bg-white/[0.1] text-white/70"
-                              }`}
-                            >
-                              +{step} Cr
-                            </button>
-                          );
-                        })}
+                        <button
+                          type="button"
+                          onClick={() => setSalePrice((p) => p + 5)}
+                          className="px-2 py-0.5 rounded bg-white/[0.05] hover:bg-white/[0.1] text-white/70"
+                        >
+                          +5 Cr
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setSalePrice((p) => p + 10)}
+                          className="px-2 py-0.5 rounded bg-white/[0.05] hover:bg-white/[0.1] text-white/70"
+                        >
+                          +10 Cr
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setSalePrice((p) => p + 20)}
+                          className="px-2 py-0.5 rounded bg-white/[0.05] hover:bg-white/[0.1] text-white/70"
+                        >
+                          +20 Cr
+                        </button>
                       </div>
                     </div>
 
