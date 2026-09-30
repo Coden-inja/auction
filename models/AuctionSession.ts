@@ -53,6 +53,7 @@ export interface IAuctionSession extends Document {
   viewerMode: "stage" | "ledger" | "matrix";
   lastSoldLot?: ILastSoldLot | null;
   matrixRevealed: boolean;
+  stagePrice?: number | null;
   teams: IAuctionTeam[];
   lots: IAuctionLot[];
   history: IAuctionHistory[];
@@ -139,6 +140,8 @@ const AuctionSessionSchema = new Schema<IAuctionSession>(
     },
     lastSoldLot: { type: LastSoldLotSchema, default: null },
     matrixRevealed: { type: Boolean, default: false },
+    /** Live asking price broadcast to the projector while the lot is being bid. Cleared on stage clear and on allot. */
+    stagePrice: { type: Number, default: null },
     teams: { type: [AuctionTeamSchema], default: [] },
     lots: { type: [AuctionLotSchema], default: [] },
     history: { type: [AuctionHistorySchema], default: [] },

@@ -125,6 +125,7 @@ export async function POST(req: Request) {
           // Clear stage state, otherwise a stageMode of "sold" plus a stale
           // lastSoldLot makes the projector show the previous run's sold card.
           lastSoldLot: null,
+          stagePrice: null,
           stageMode: "auto",
           viewerMode: "stage",
           teams: auctionTeams,

@@ -114,6 +114,7 @@ export async function POST(req: Request) {
     session.stageMode = "sold";
     session.viewerMode = "stage";
     session.activeLotId = lot.lotId; // Keep active until cleared or admin changes screen
+    session.stagePrice = null; // Hammer fell: the live asking bid is no longer live
 
     session.markModified("teams");
     session.markModified("lots");
