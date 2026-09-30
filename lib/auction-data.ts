@@ -346,6 +346,34 @@ export const INITIAL_TEAM_BUDGET = 200; // ₹200 Cr starting budget
 export const ROUND1_MAX_BID = 135; // ₹135 Cr safe limit for Round 1
 export const STATE_BASE_PRICE = 30; // ₹30 Cr base price for states
 
+/**
+ * Final HULT ASCEND quiz top 10 (event code 470009, 73 teams ranked).
+ *
+ * This is a LAST-RESORT fallback only. /api/auction/init still prefers, in order:
+ * teams passed by the Setup screen, then the quiz's published `quizStandings` document,
+ * then confirmed registrations. It is reached only if none of those are available, so a
+ * missing or unreachable quiz database can never leave the auction with placeholder teams.
+ *
+ * Team codes are the real HULT-* codes so the public /team dashboard keeps working.
+ */
+export const FALLBACK_QUIZ_TEAMS: {
+  teamId: string;
+  teamName: string;
+  teamCode: string;
+  quizRank: number;
+}[] = [
+  { teamId: "quiz-470009-1", teamName: "sherni-ism", teamCode: "HULT-6ZNM", quizRank: 1 },
+  { teamId: "quiz-470009-2", teamName: "Jata", teamCode: "HULT-3KXS", quizRank: 2 },
+  { teamId: "quiz-470009-3", teamName: "Medieval Eggs", teamCode: "HULT-S8GW", quizRank: 3 },
+  { teamId: "quiz-470009-4", teamName: "Biocons", teamCode: "HULT-LFBQ", quizRank: 4 },
+  { teamId: "quiz-470009-5", teamName: "Quadnova", teamCode: "HULT-LSJ2", quizRank: 5 },
+  { teamId: "quiz-470009-6", teamName: "TEAM AROMA", teamCode: "HULT-J2LM", quizRank: 6 },
+  { teamId: "quiz-470009-7", teamName: "Crisis", teamCode: "HULT-K3HE", quizRank: 7 },
+  { teamId: "quiz-470009-8", teamName: "Team hawks", teamCode: "HULT-842H", quizRank: 8 },
+  { teamId: "quiz-470009-9", teamName: "THE GAMECHANGERS", teamCode: "HULT-WRQQ", quizRank: 9 },
+  { teamId: "quiz-470009-10", teamName: "Depth Vision", teamCode: "HULT-JBP4", quizRank: 10 },
+];
+
 export interface TeamScoreCalculation {
   teamId: string;
   teamName: string;
